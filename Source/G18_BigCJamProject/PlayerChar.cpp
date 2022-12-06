@@ -4,8 +4,11 @@
 #include "PlayerChar.h"
 #include "Components/BoxComponent.h"
 #include "Components/InputComponent.h"
+#include "GameFramework/Controller.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "Kismet/GameplayStatics.h"
 #include "Camera/CameraComponent.h"
+//#include "PaperFlipbookComponent.h"
 
 //FName APlayerChar::SpriteComponentName(TEXT("Sprite0"));
 
@@ -15,11 +18,8 @@ APlayerChar::APlayerChar()
  	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	PlayerTransform = CreateDefaultSubobject<USceneComponent>(TEXT("PlayerTransform"));
-	RootComponent = PlayerTransform;
-
 	PlayerCollider = CreateDefaultSubobject<UBoxComponent>(TEXT("PlayerCollider"));
-	PlayerCollider->SetupAttachment(RootComponent);
+	SetRootComponent(PlayerCollider);
 
 	// Create a camera boom attached to the root (capsule)
 	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
@@ -49,13 +49,29 @@ void APlayerChar::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	OnClicked.AddDynamic(this, &APlayerChar::OnClick);
+
 }
 
 // Called every frame
 void APlayerChar::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	
+	if (!(UGameplayStatics::GetPlayerController(GetWorld(), 0)->bShowMouseCursor))
+	{
+		UGameplayStatics::GetPlayerController(GetWorld(), 0)->SetShowMouseCursor(true);
+	}
+	
+	if (!(UGameplayStatics::GetPlayerController(GetWorld(), 0)->bEnableClickEvents))
+	{
+		UGameplayStatics::GetPlayerController(GetWorld(), 0)->bEnableClickEvents = true;
+	}
+}
 
+void APlayerChar::OnClick(AActor* TouchedActor, FKey ButtonPressed)
+{
+	UE_LOG(LogTemp, Warning, TEXT("Clicked"));
 }
 
 // Called to bind functionality to input

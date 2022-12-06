@@ -33,10 +33,6 @@ protected:
 	virtual void BeginPlay() override;
 
 	#pragma region Main Properties
-	//Player transform
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
-	class USceneComponent* PlayerTransform;
-
 	//Player collider/hitbox
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Collision")
 	class UBoxComponent* PlayerCollider;
@@ -50,7 +46,8 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-
+	UFUNCTION()
+	void OnClick(AActor* TouchedActor, FKey ButtonPressed);
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
