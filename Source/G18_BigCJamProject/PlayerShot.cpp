@@ -24,13 +24,13 @@ APlayerShot::APlayerShot()
 	ShotMovement->SetPlaneConstraintNormal(FVector(0.0f, 0.0f, 0.0f));
 	ShotMovement->bConstrainToPlane = false;
 
-	ShotCollider ->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	ShotCollider->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
 	Damage = 1.0f;
 
 	MaxTimeBeforeKill = 5.0f;
 
-	TimeBeforeKill = MaxTimeBeforeKill;
+	TimeBeforeKill = 0.0f;
 }
 
 // Called when the game starts or when spawned
@@ -38,6 +38,7 @@ void APlayerShot::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	TimeBeforeKill = MaxTimeBeforeKill;
 }
 
 // Called every frame
