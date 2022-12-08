@@ -6,6 +6,7 @@
 #include "Components/InputComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "PaperFlipbookComponent.h"
 //#include "PaperFlipbookComponent.h"
 
 //FName APlayerChar::SpriteComponentName(TEXT("Sprite0"));
@@ -44,7 +45,8 @@ APlayerChar::APlayerChar()
 	//PlayerCamera->bUsePawnControlRotation = false;
 	//PlayerCamera->bAutoActivate = true;
 
-	//PlayerAnimation = CreateOptionalDefaultSubobject<UPaperFlipbookComponent>(APlayerChar::SpriteComponentName);
+	PlayerAnimation = CreateDefaultSubobject<UPaperFlipbookComponent>(TEXT("PlayerAnimation"));
+	PlayerAnimation->SetupAttachment(RootComponent);
 
 #pragma endregion
 

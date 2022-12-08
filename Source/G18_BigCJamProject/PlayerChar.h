@@ -95,9 +95,9 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Shooting")
 		TSubclassOf<APlayerShot> ShotBP;
 
-	////Default player sprite animation
-	//UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
-	//class UPaperFlipbook* PlayerAnimation;
+	//Default player sprite animation
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Sprite")
+	class UPaperFlipbookComponent* PlayerAnimation;
 
 #pragma endregion
 
