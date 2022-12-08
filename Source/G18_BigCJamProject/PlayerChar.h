@@ -11,8 +11,7 @@ USTRUCT(BlueprintType)
 struct FMouseTransform
 {
 	GENERATED_BODY()
-
-public:
+	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	FVector MouseLocation;
 	
@@ -90,7 +89,7 @@ protected:
 
 	//Player firing origin transform
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Shooting")
-	class USceneComponent* PlayerShotOrigin;
+	USceneComponent* PlayerShotOrigin;
 
 	//Projectile blueprint
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Shooting")

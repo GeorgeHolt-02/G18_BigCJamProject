@@ -4,10 +4,8 @@
 #include "PlayerChar.h"
 #include "Components/BoxComponent.h"
 #include "Components/InputComponent.h"
-#include "GameFramework/Controller.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Kismet/GameplayStatics.h"
-#include "Camera/CameraComponent.h"
 //#include "PaperFlipbookComponent.h"
 
 //FName APlayerChar::SpriteComponentName(TEXT("Sprite0"));
@@ -85,7 +83,7 @@ void APlayerChar::Tick(float DeltaTime)
 
 	if (bClickHeld)
 	{
-		if ((GetMouseTransform().MouseLocation.X - MousePrevPosition.X) < 0.0f)
+		if ((GetMouseTransform().MouseLocation.X - MousePrevPosition.X) < -0.25f)
 		{
 			Shoot();
 		}
