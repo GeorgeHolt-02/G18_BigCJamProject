@@ -37,6 +37,8 @@ APlayerShot::APlayerShot()
 void APlayerShot::BeginPlay()
 {
 	Super::BeginPlay();
+
+	ShotCollider->OnComponentBeginOverlap.AddDynamic(this, &APlayerShot::OnOverlapBegin);
 	
 	TimeBeforeKill = MaxTimeBeforeKill;
 }
@@ -59,7 +61,8 @@ void APlayerShot::Tick(float DeltaTime)
 	}
 }
 
-void APlayerShot::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& HitResult)
+void APlayerShot::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	Destroy();
 }

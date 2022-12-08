@@ -85,7 +85,7 @@ void APlayerChar::Tick(float DeltaTime)
 
 	if (bClickHeld)
 	{
-		if ((GetMouseTransform().MouseLocation.X - MousePrevPosition.X) < -1.0f)
+		if ((GetMouseTransform().MouseLocation.X - MousePrevPosition.X) < 0.0f)
 		{
 			Shoot();
 		}
@@ -153,7 +153,10 @@ void APlayerChar::Shoot()
 				const FActorSpawnParameters SpawnParams;
 
 				APlayerShot* ShotProjectile = (GetWorld()->SpawnActor<APlayerShot>(ShotBP, ShotLocation, ShotRotation, SpawnParams));
-				ShotProjectile->Tags.Add(ShotTag);
+				if (ShotProjectile)
+				{
+					ShotProjectile->Tags.Add(ShotTag);
+				}
 			}
 		}
 	}
