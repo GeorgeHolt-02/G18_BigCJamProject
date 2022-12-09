@@ -22,9 +22,9 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	float MovementSpeed;
 
-	//Firing frequency
+	//Firing delay time
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
-	float FiringFrequency;
+	float FiringDelayTime;
 
 	//Time until next shot
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
@@ -61,6 +61,26 @@ public:
 	//Is there a player character?
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	bool bPlayerPresent;
+
+	//Delay before shooting code becomes active
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	float StartingDelayTime;
+
+	//Time until the enemy can start shooting
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	float TimeUntilBeginShooting;
+
+	//Flashing delay
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+		float FlashingDelayTime;
+
+	//Elapsed flashing time
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+		float FlashingDelayTimeElapsed;
+
+	//Is the delay before shooting activation finished?
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	bool bCanShoot;
 
 #pragma endregion 
 
