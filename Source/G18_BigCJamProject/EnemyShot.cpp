@@ -21,7 +21,7 @@ AEnemyShot::AEnemyShot()
 	ShotMovement = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("ShotMovement"));
 
 	ShotMovement->InitialSpeed = 500.0f;
-	ShotMovement->MaxSpeed = 0.0f;
+	ShotMovement->MaxSpeed = ShotMovement->InitialSpeed;
 	ShotMovement->Velocity = FVector(1.0f, 0.0f, 0.0f);
 	ShotMovement->bRotationFollowsVelocity = true;
 	ShotMovement->ProjectileGravityScale = 0.0f;
@@ -32,7 +32,7 @@ AEnemyShot::AEnemyShot()
 
 	MaxTimeBeforeKill = 10.0f;
 
-	TimeBeforeKill = 0.0f;
+	TimeBeforeKill = MaxTimeBeforeKill;
 }
 
 // Called when the game starts or when spawned
@@ -40,6 +40,9 @@ void AEnemyShot::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	ShotCollider->OnComponentBeginOverlap.AddDynamic(this, &AEnemyShot::OnOverlapBegin);
+
+	TimeBeforeKill = MaxTimeBeforeKill;
 }
 
 // Called every frame
@@ -67,6 +70,7 @@ void AEnemyShot::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor
 	if (MyPlayerChar)
 	{
 		MyPlayerChar->PlayerAnimation->SetVisibility(false);
+		MyPlayerChar->PlayerCollider->SetHiddenInGame(true);
 		MyPlayerChar->PlayerCollider->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 		MyPlayerChar->SetActorTickEnabled(false);
 		Destroy();

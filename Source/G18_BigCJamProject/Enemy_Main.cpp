@@ -5,7 +5,6 @@
 
 #include "PaperFlipbookComponent.h"
 #include "PlayerChar.h"
-#include "EnemyShot.h"
 #include "Components/BoxComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Kismet/KismetMathLibrary.h"
@@ -23,8 +22,8 @@ AEnemy_Main::AEnemy_Main()
 	EnemyAnimation->SetupAttachment(RootComponent);
 	
 	MovementSpeed = 50.0f;
-	FiringFrequency = 1.0f;
-	TimeToNextShot = FiringFrequency;
+	FiringDelayTime = 1.0f;
+	TimeToNextShot = FiringDelayTime;
 	MaximumHealth = 1.0f;
 	CurrentHealth = MaximumHealth;
 	ProjectileSpeed = 500.0f;
@@ -33,6 +32,12 @@ AEnemy_Main::AEnemy_Main()
 	Player = nullptr;
 	bPlayerPresent = false;
 	FiringAngle = FRotator(0.0f, 0.0f, 0.0f);
+
+	StartingDelayTime = 1.0f;
+	TimeUntilBeginShooting = StartingDelayTime;
+	FlashingDelayTime = 0.016667f;
+	FlashingDelayTimeElapsed = FlashingDelayTime;
+	bCanShoot = false;
 }
 
 // Called when the game starts or when spawned
@@ -40,7 +45,10 @@ void AEnemy_Main::BeginPlay()
 {
 	Super::BeginPlay();
 
-	TimeToNextShot = FiringFrequency;
+	TimeUntilBeginShooting = StartingDelayTime;
+	FlashingDelayTimeElapsed = FlashingDelayTime;
+
+	TimeToNextShot = 0.0f;
 	CurrentHealth = MaximumHealth;
 	Player = Cast<APlayerChar>(GetWorld()->GetFirstPlayerController()->GetPawn());
 	if(Player)
@@ -58,6 +66,36 @@ void AEnemy_Main::BeginPlay()
 void AEnemy_Main::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	if (TimeUntilBeginShooting > 0.0f)
+	{
+		TimeUntilBeginShooting -= DeltaTime;
+
+		if (FlashingDelayTimeElapsed > 0.0f)
+		{
+			FlashingDelayTimeElapsed -= DeltaTime;
+		}
+		else
+		{
+			if (EnemyCollider->bHiddenInGame == false)
+			{
+				EnemyCollider->SetHiddenInGame(true);
+				EnemyAnimation->SetHiddenInGame(true);
+			}
+			else
+			{
+				EnemyCollider->SetHiddenInGame(false);
+				EnemyAnimation->SetHiddenInGame(false);
+			}
+			FlashingDelayTimeElapsed = FlashingDelayTime;
+		}
+	}
+	else
+	{
+		bCanShoot = true;
+		EnemyCollider->SetHiddenInGame(false);
+		EnemyAnimation->SetHiddenInGame(false);
+	}
 
 	FHitResult* MoveHit = new FHitResult;
 	const bool Move = SetActorLocation(FVector(
@@ -94,25 +132,36 @@ void AEnemy_Main::Shooting(float DeltaTime)
 	{
 		FiringAngle = UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), Player->GetActorLocation());
 	}
-	TimeToNextShot -= DeltaTime;
 
-	if(TimeToNextShot <= 0.0f)
+	if (bCanShoot)
 	{
-		const FRotator ShotRotation = FiringAngle;
-		const FVector ShotLocation = GetActorLocation();
-		
-		if (ShotBP)
+		TimeToNextShot -= DeltaTime;
+
+		if (TimeToNextShot <= 0.0f)
 		{
-			const FActorSpawnParameters SpawnParams;
+			UE_LOG(LogTemp, Warning, TEXT("FIRE1"));
 
-			AEnemyShot* ShotProjectile = (GetWorld()->SpawnActor<AEnemyShot>(ShotBP, ShotLocation, ShotRotation, SpawnParams));
-
-			if(ShotProjectile)
+			if (ShotBP)
 			{
-				ShotProjectile->ShotMovement->InitialSpeed = ProjectileSpeed;
-				ShotProjectile->SetActorScale3D(ProjectileScale);
+				UE_LOG(LogTemp, Warning, TEXT("FIRE2"));
+
+				const FRotator ShotRotation = FiringAngle;
+				const FVector ShotLocation = GetActorLocation();
+
+				const FActorSpawnParameters SpawnParams;
+
+				AEnemyShot* ShotProjectile = (GetWorld()->SpawnActor<AEnemyShot>(ShotBP, ShotLocation, ShotRotation, SpawnParams));
+
+				if (ShotProjectile)
+				{
+					UE_LOG(LogTemp, Warning, TEXT("FIRE3"));
+
+					ShotProjectile->ShotMovement->InitialSpeed = ProjectileSpeed;
+					ShotProjectile->ShotMovement->MaxSpeed = ProjectileSpeed;
+					ShotProjectile->SetActorScale3D(ProjectileScale);
+				}
+				TimeToNextShot = FiringDelayTime;
 			}
-			TimeToNextShot = FiringFrequency;
 		}
 	}
 }
@@ -121,9 +170,12 @@ void AEnemy_Main::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActo
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	APlayerShot* MyPlayerShot = Cast<APlayerShot>(OtherActor);
-	if(MyPlayerShot)
+	if (MyPlayerShot)
 	{
-		Destroy();
+		if (bCanShoot)
+		{
+			Destroy();
+		}
 	}
 }
 
