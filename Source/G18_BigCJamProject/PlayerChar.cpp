@@ -72,6 +72,8 @@ void APlayerChar::BeginPlay()
 	Super::BeginPlay();
 	
 	OnClicked.AddDynamic(this, &APlayerChar::OnClick);
+
+	PlayerCollider->OnComponentBeginOverlap.AddDynamic(this, &APlayerChar::OnOverlapBegin);
 	
 	MousePrevPosition = GetMouseTransform().MouseLocation;
 }
@@ -137,6 +139,12 @@ void APlayerChar::OnRelease()
 
 		bClickHeld = false;
 	}
+}
+
+void APlayerChar::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	
 }
 
 void APlayerChar::Shoot()

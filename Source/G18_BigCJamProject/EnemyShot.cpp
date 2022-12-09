@@ -1,14 +1,16 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "PlayerShot.h"
+#include "EnemyShot.h"
 
-#include "Enemy_Main.h"
+#include "PaperFlipbookComponent.h"
+#include "PlayerChar.h"
+#include "Components/BoxComponent.h"
 #include "Components/SphereComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 
 // Sets default values
-APlayerShot::APlayerShot()
+AEnemyShot::AEnemyShot()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -28,25 +30,20 @@ APlayerShot::APlayerShot()
 
 	ShotCollider->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
-	Damage = 1.0f;
-
-	MaxTimeBeforeKill = 5.0f;
+	MaxTimeBeforeKill = 10.0f;
 
 	TimeBeforeKill = 0.0f;
 }
 
 // Called when the game starts or when spawned
-void APlayerShot::BeginPlay()
+void AEnemyShot::BeginPlay()
 {
 	Super::BeginPlay();
-
-	ShotCollider->OnComponentBeginOverlap.AddDynamic(this, &APlayerShot::OnOverlapBegin);
 	
-	TimeBeforeKill = MaxTimeBeforeKill;
 }
 
 // Called every frame
-void APlayerShot::Tick(float DeltaTime)
+void AEnemyShot::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
@@ -63,14 +60,16 @@ void APlayerShot::Tick(float DeltaTime)
 	}
 }
 
-void APlayerShot::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+void AEnemyShot::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	AEnemy_Main* MyEnemy = Cast<AEnemy_Main>(OtherActor);
-	if(MyEnemy)
+	APlayerChar* MyPlayerChar = Cast<APlayerChar>(OtherActor);
+	if (MyPlayerChar)
 	{
-		MyEnemy->CurrentHealth -= Damage;
+		MyPlayerChar->PlayerAnimation->SetVisibility(false);
+		MyPlayerChar->PlayerCollider->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		MyPlayerChar->SetActorTickEnabled(false);
+		Destroy();
 	}
-	Destroy();
 }
 

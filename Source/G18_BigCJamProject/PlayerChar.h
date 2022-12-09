@@ -75,6 +75,14 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	FVector MousePrevPosition;
 
+	//Player collider/hitbox
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Collision")
+	class UBoxComponent* PlayerCollider;
+
+	//Default player sprite animation
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Sprite")
+	class UPaperFlipbookComponent* PlayerAnimation;
+
 #pragma endregion
 
 protected:
@@ -82,10 +90,6 @@ protected:
 	virtual void BeginPlay() override;
 
 #pragma region /* MAIN COMPONENTS */
-	
-	//Player collider/hitbox
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Collision")
-	class UBoxComponent* PlayerCollider;
 
 	//Player firing origin transform
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Shooting")
@@ -94,10 +98,6 @@ protected:
 	//Projectile blueprint
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Shooting")
 		TSubclassOf<APlayerShot> ShotBP;
-
-	//Default player sprite animation
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Sprite")
-	class UPaperFlipbookComponent* PlayerAnimation;
 
 #pragma endregion
 
@@ -110,6 +110,10 @@ public:
 	UFUNCTION()
 	void UpdatePlayerPosition();
 
+	//Shooting function
+	UFUNCTION()
+	void Shoot();
+
 #pragma endregion
 
 #pragma region /* DELEGATE-BOUND FUNCTIONS */
@@ -120,9 +124,10 @@ public:
 	UFUNCTION()
 	void OnRelease();
 
-	//Shooting function
+	// Called on an overlap
 	UFUNCTION()
-	void Shoot();
+	void OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp,
+		int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
 #pragma endregion
 
