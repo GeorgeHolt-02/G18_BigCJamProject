@@ -8,6 +8,7 @@
 #include "Components/BoxComponent.h"
 #include "Components/SphereComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
+#include "Kismet/KismetSystemLibrary.h"
 
 // Sets default values
 AEnemyShot::AEnemyShot()
@@ -74,6 +75,7 @@ void AEnemyShot::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor
 		MyPlayerChar->PlayerCollider->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 		MyPlayerChar->SetActorTickEnabled(false);
 		Destroy();
+		UKismetSystemLibrary::QuitGame(GetWorld(), GetWorld()->GetFirstPlayerController(), EQuitPreference::Quit, false);
 	}
 }
 
