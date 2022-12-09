@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "EnemyShot.h"
 #include "GameFramework/Actor.h"
 #include "Enemy_Main.generated.h"
 
@@ -25,6 +26,10 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	float FiringFrequency;
 
+	//Time until next shot
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	float TimeToNextShot;
+
 	//Maximum health
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	float MaximumHealth;
@@ -40,6 +45,22 @@ public:
 	//Shot size
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	FVector ProjectileScale;
+
+	//Movement direction (1 for up, -1 for down)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	int MovementDirection;
+
+	//Player character
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	class APlayerChar* Player;
+
+	//Firing angle
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	FRotator FiringAngle;
+
+	//Is there a player character?
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	bool bPlayerPresent;
 
 #pragma endregion 
 
@@ -58,8 +79,8 @@ protected:
 	class UPaperFlipbookComponent* EnemyAnimation;
 	
 	//Projectile blueprint
-	//UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Shooting")
-	//TSubclassOf<APlayerShot> ShotBP;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Shooting")
+	TSubclassOf<AEnemyShot> ShotBP;
 
 #pragma endregion 
 
@@ -67,4 +88,20 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+#pragma region /* STANDARD FUNCTIONS */
+
+	UFUNCTION(BlueprintCallable, Category = "Shooting")
+	void Shooting(float DeltaTime);
+
+#pragma endregion 
+
+#pragma region /* DELEGATE-BOUND FUNCTIONS */
+	
+	// Called on an overlap
+	UFUNCTION()
+	void OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp,
+		int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+
+#pragma endregion	
+	
 };
